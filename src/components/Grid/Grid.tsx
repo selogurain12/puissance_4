@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mui/material';
-import { styles } from '../styles/Grid.style';
+import { styles } from './Grid.style';
 import { useState } from 'react';
 
 export default function Grid() {
