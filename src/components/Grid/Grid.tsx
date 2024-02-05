@@ -2,35 +2,43 @@ import { Box, Stack } from '@mui/material';
 import { styles } from './Grid.style';
 import { useState } from 'react';
 
-export default function Grid() {
+const Grid = () => {
   const { gridContainer, rowContainer, colContainer } = styles;
-  const rows = [1, 2, 3, 4, 5, 6];
-  const cols = [1, 2, 3, 4, 5, 6, 7];
+  const numRows = 6;
+  const numCols = 7;
 
+  const initialGrid = Array.from({ length: numRows }, () => Array(numCols).fill(null));
+  const [grid, setGrid] = useState(initialGrid);
   const [currentPlayer, setCurrentPlayer] = useState('red');
-  const [currentCase, setCurrentCase] = useState('');
 
-  const handleClick = () => {
-    setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red')
+  const handleClick = (row:number, col:number) => {
+    if (!grid[row][col]) {
+      const newGrid = [...grid];
+      newGrid[row][col] = currentPlayer;
+      setGrid(newGrid);
+      setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
+    }
   };
 
-  const Square = () => {
+  const Square = ({ value, row, col }: any) => {
     return (
-      <Box sx={colContainer} onClick={() => handleClick()}>
-        {currentCase === '' && currentPlayer && <img src={`../src/assets/${currentPlayer}.svg`} alt={currentPlayer} />}
+      <Box sx={colContainer} onClick={() => handleClick(row, col)}>
+        {value && <img src={`../src/assets/${value}.svg`} alt={value} />}
       </Box>
     );
   };
 
   return (
     <Box sx={gridContainer}>
-      {rows.map((row) => (
-        <Stack key={row} sx={rowContainer} direction={'row'}>
-          {cols.map((col) => (
-            <Square key={col}/>
+      {grid.map((row, rowIndex) => (
+        <Stack key={rowIndex} sx={rowContainer} direction={'row'}>
+          {row.map((col, colIndex) => (
+            <Square key={colIndex} value={col} row={rowIndex} col={colIndex} />
           ))}
         </Stack>
       ))}
     </Box>
   );
-}
+};
+
+export default Grid;
