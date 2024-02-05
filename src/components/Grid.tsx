@@ -1,17 +1,25 @@
-import '../styles/grid.css'
+import { Box, Stack } from '@mui/material'
+import {styles} from '../styles/Grid.style'
 
 export default function Grid() {
+    const {gridContainer, rowContainer, colContainer} = styles
+    const rows = [1, 2, 3, 4, 5, 6]
+    const cols = [1, 2, 3, 4, 5, 6, 7]
     return (
-        <div className="grid">
-        <div className="grid-item">1</div>
-        <div className="grid-item">2</div>
-        <div className="grid-item">3</div>
-        <div className="grid-item">4</div>
-        <div className="grid-item">5</div>
-        <div className="grid-item">6</div>
-        <div className="grid-item">7</div>
-        <div className="grid-item">8</div>
-        <div className="grid-item">9</div>
-        </div>
+        <Box sx={gridContainer}>
+            {rows.map((row) => {
+                return (
+                    <Stack sx={rowContainer} direction={'row'}>
+                        {cols.map((col) => {
+                            return (
+                                <Box sx={colContainer}>
+                                    X
+                                </Box>
+                            )
+                        })}
+                    </Stack>
+                )
+            })}
+        </Box>
     )
 }
