@@ -1,4 +1,4 @@
-const styles = {
+export const styles = {
   gridContainer: {
     backgroundColor: 'white',
     borderRadius: '5px',
@@ -13,4 +13,3 @@ const styles = {
     border: '2px solid #000',
   },
 };
-export default styles;
