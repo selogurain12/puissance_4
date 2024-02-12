@@ -1,5 +1,5 @@
 import {
-  Box, Stack, Modal, Typography, Button,
+  Box, Stack, Modal, Typography, Button, Slide,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from '../useWebSocket';
@@ -104,6 +104,11 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
       }
     }
   };
+  const handleReset = (): void => {
+    setShowPopup(false); // Hide the victory popup
+    setGrid(initialGrid); // Reset the grid
+    setCurrentPlayer('red'); // Set the starting player
+  };
 
   const Square: React.FC<{ value: string | null; row: number; col: number }> = ({ value, row, col }) => (
     <Box sx={colContainer} onClick={() => handleClick(col)}>
@@ -112,7 +117,7 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   );
 
   return (
-    <Box sx={gridContainer}>
+    <Box sx={{ ...gridContainer, background: 'url(\'../src/assets/background.jpg\')' }}>
       {grid.map((row: string[], rowIndex: number) => (
         <Stack key={rowIndex} direction="row">
           {row.map((col: string, colIndex: number) => (
@@ -121,15 +126,18 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
         </Stack>
       ))}
       <Modal open={showPopup} onClose={() => setShowPopup(false)}>
-        <Box sx={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', boxShadow: 24, p: 4,
-        }}
-        >
-          <Typography variant="h5" gutterBottom>
-            {`${currentPlayer} wins!`}
-          </Typography>
-          <Button variant="contained" onClick={() => setShowPopup(false)}>Close</Button>
-        </Box>
+        <Slide direction="up" in={showPopup} mountOnEnter unmountOnExit>
+          <Box sx={{
+            position: 'absolute', top: '29%', left: '42%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 8, textAlign: 'center',
+          }}
+          >
+            <img src={`../src/assets/${currentPlayer}.svg`} alt={currentPlayer} style={{ width: 100, marginBottom: 20 }} />
+            <Typography variant="h5" gutterBottom>
+              {`${currentPlayer.toUpperCase()} WIN!`}
+            </Typography>
+            <Button variant="contained" onClick={handleReset}>Close</Button>
+          </Box>
+        </Slide>
       </Modal>
     </Box>
   );
