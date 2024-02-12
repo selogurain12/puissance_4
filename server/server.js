@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
-const moment = require('moment'); // Assurez-vous d'avoir moment.js installé
+const moment = require('moment');
 
 const app = express();
 const server = http.createServer(app);
@@ -12,16 +12,15 @@ const io = require('socket.io')(server, {
     }
 });
 
-// Initialisation de l'objet users pour suivre les utilisateurs connectés
 let users = {};
+let connectedUsers = 0;
 
 io.on('connection', (socket) => {
+  connectedUsers++;
   console.log('Un utilisateur est connecté');
 
-  // Vous pouvez ajouter ici une gestion pour stocker l'utilisateur lors de la connexion
   socket.on('username', (username) => {
     users[socket.id] = { id: socket.id, name: username };
-    // Informer tous les clients de la liste mise à jour des utilisateurs
     io.emit('users', Object.values(users));
   });
 
@@ -31,19 +30,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('send', message => {
-    // Assurez-vous que users[socket.id] existe avant de l'utiliser
     const user = users[socket.id];
     if (user) {
       io.emit('message', { user: user, text: message, date: moment().toISOString() });
     }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected: ' + socket.id);
-    // Supprimer l'utilisateur de l'objet users
-    delete users[socket.id];
-    // Informer tous les clients de la liste mise à jour des utilisateurs
-    io.emit('users', Object.values(users));
   });
 });
 
