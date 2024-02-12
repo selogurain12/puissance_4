@@ -66,3 +66,18 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#messages {
+  height: 200px;
+  background-color: #eee;
+  font-size: 12px;
+  padding: 20px;
+}
+
+input {
+  width: 100%;
+}
+
+#submit {
+  width: 100%;
+}

@@ -15,8 +15,6 @@ export default function Grid() {
       socket.on('message', (message: any) => {
         console.log('Message reçu:', message);
       });
-
-      socket.emit('message', 'Hello Server');
     }
   }, [socket]);
     const {gridContainer, rowContainer, colContainer} = styles
