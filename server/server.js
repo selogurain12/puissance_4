@@ -35,6 +35,11 @@ io.on('connection', (socket) => {
       io.emit('message', { user: user, text: message, date: moment().toISOString() });
     }
   });
+
+  socket.on('move', (move) => {
+    console.log('Grille reçu:', move);
+    io.emit('move', move);
+  });
 });
 
 const PORT = process.env.PORT || 3001;
