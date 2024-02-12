@@ -7,9 +7,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rowContainer: {
-    border: '1px solid #000',
-  },
   colContainer: {
     padding: '5px',
     border: '1px solid #000',

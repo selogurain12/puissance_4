@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { atom, useAtom } from 'jotai';
-import appBarStyles from './AppBar.style.ts';
 
 export const rowAtom = atom(6);
 export const colsAtom = atom(7);
@@ -48,7 +47,6 @@ const AppBarConnectFour: React.FC = () => {
           </Toolbar>
         </AppBar>
       </Box>
-      <Box sx={appBarStyles.appBarContainer} />
     </Box>
   );
 };

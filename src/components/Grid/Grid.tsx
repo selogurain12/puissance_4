@@ -1,6 +1,5 @@
 import { Box, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import style from './Grid.style';
 import useWebSocket from '../useWebSocket';
 import styles from './Grid.style';
 
@@ -13,17 +12,8 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
   const initialGrid = Array.from({ length: rows }, () => Array(cols).fill(null));
   const [grid, setGrid] = useState<string[][]>(initialGrid);
-  const { gridContainer, rowContainer, colContainer } = styles;
+  const { gridContainer, colContainer } = styles;
 
-  useEffect(() => (setGrid(initialGrid)), [rows, cols]);
-  const findValidRow = (col: number): number => {
-    for (let row = rows - 1; row >= 0; row--) {
-      if (!grid[row][col]) {
-        return row;
-      }
-    }
-    return -1; // Column is full
-  };
   const socket = useWebSocket();
 
   useEffect(() => {
@@ -37,6 +27,16 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
       });
     }
   }, [socket]);
+
+  useEffect(() => (setGrid(initialGrid)), [rows, cols]);
+  const findValidRow = (col: number): number => {
+    for (let row = rows - 1; row >= 0; row--) {
+      if (!grid[row][col]) {
+        return row;
+      }
+    }
+    return -1;
+  };
 
   const handleClick = (col: number): void => {
     const row = findValidRow(col);
@@ -61,7 +61,7 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   return (
     <Box sx={gridContainer}>
       {grid.map((row: string[], rowIndex: number) => (
-        <Stack key={rowIndex} sx={rowContainer} direction="row">
+        <Stack key={rowIndex} direction="row">
           {row.map((col: string, colIndex: number) => (
             <Square key={colIndex} value={col} row={rowIndex} col={colIndex} />
           ))}
