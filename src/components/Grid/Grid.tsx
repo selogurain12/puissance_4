@@ -85,7 +85,7 @@ const Grid: React.FC = () => {
       setGrid(newGrid);
 
       if (checkForWinner(row, col)) {
-        console.log(`${currentPlayer} wins!`);
+        alert(`${currentPlayer} wins!`);
       } else {
         setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
       }
