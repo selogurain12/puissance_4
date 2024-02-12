@@ -14,17 +14,31 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   const { gridContainer, rowContainer, colContainer } = styles;
 
   useEffect(() => (setGrid(initialGrid)), [rows, cols]);
-  const handleClick = (row: number, col: number) => {
-    if (!grid[row][col]) {
+  const findValidRow = (col: number): number => {
+    for (let row = rows - 1; row >= 0; row--) {
+      if (!grid[row][col]) {
+        return row;
+      }
+    }
+    return -1; // Column is full
+  };
+
+  const handleClick = (col: number): void => {
+    const row = findValidRow(col);
+
+    if (row !== -1) {
       const newGrid = [...grid];
       newGrid[row][col] = currentPlayer;
       setGrid(newGrid);
+
+      // Add logic to check for a winner
+
       setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
     }
   };
 
   const Square: React.FC<{ value: string | null; row: number; col: number }> = ({ value, row, col }) => (
-    <Box sx={colContainer} onClick={() => handleClick(row, col)}>
+    <Box sx={colContainer} onClick={() => handleClick(col)}>
       {value && <img src={`../src/assets/${value}.svg`} alt={value} />}
     </Box>
   );
