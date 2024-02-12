@@ -1,7 +1,7 @@
 import {Box, Stack, Modal, Typography, Button, Slide} from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import useWebSocket from '../useWebSocket';
 import styles from './Grid.style';
+import { io } from 'socket.io-client';
 
 interface Props {
   rows: number;
@@ -14,6 +14,9 @@ interface SquareProps {
   row: number;
 }
 
+const socket = io("http://localhost:3001", {
+  transports: ["websocket", "polling"]
+});
 const Grid: React.FC<Props> = ({ rows, cols }) => {
   const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
   const initialGrid = Array.from({ length: rows }, () => Array(cols).fill(null));
@@ -21,19 +24,23 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   const [showPopup, setShowPopup] = useState(false);
   const { gridContainer, colContainer } = styles;
 
-  const socket = useWebSocket();
-
   useEffect(() => {
-    if (socket) {
-      socket.on('connect', () => {
-        console.log('Connecté au serveur WebSocket');
-      });
-
-      socket.on('message', (message: any) => {
-        console.log('Message reçu:', message);
-      });
+    socket.on('connect', () => {
+      console.log('Connecté au serveur WebSocket');
+    });
+    socket.on('move', (move) => {
+      applyMove(move);
+    });
+  }, [socket, grid]);
+  
+  const applyMove = (move: { row: any; col: any; player: any; }) => {
+    const { row, col, player } = move;
+    if(grid[row][col] === null) { // Vérifiez si la cellule est vide
+      const newGrid = [...grid];
+      newGrid[row][col] = player;
+      setGrid(newGrid); // Mettez à jour la grille avec le nouveau mouvement
     }
-  }, [socket]);
+  };
 
   useEffect(() => (setGrid(initialGrid)), [rows, cols]);
   const findValidRow = (col: number): number => {
@@ -102,8 +109,10 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
       setGrid(newGrid);
 
       if (checkForWinner(row, col)) {
+        socket.emit("move", { row, col, player: currentPlayer })
         setShowPopup(true); // Show victory popup
       } else {
+        socket.emit("move", { row, col, player: currentPlayer })
         setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
       }
     }
