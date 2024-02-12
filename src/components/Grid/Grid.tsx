@@ -1,6 +1,4 @@
-import {
-  Box, Stack, Modal, Typography, Button, Slide,
-} from '@mui/material';
+import {Box, Stack, Modal, Typography, Button, Slide} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from '../useWebSocket';
 import styles from './Grid.style';
@@ -10,11 +8,17 @@ interface Props {
   cols: number;
 }
 
+interface SquareProps {
+  value: string | null;
+  col: number;
+  row: number;
+}
+
 const Grid: React.FC<Props> = ({ rows, cols }) => {
   const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
   const initialGrid = Array.from({ length: rows }, () => Array(cols).fill(null));
   const [grid, setGrid] = useState<string[][]>(initialGrid);
-  const [showPopup, setShowPopup] = useState(false); // State for showing victory popup
+  const [showPopup, setShowPopup] = useState(false);
   const { gridContainer, colContainer } = styles;
 
   const socket = useWebSocket();
@@ -110,11 +114,22 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
     setCurrentPlayer('red'); // Set the starting player
   };
 
-  const Square: React.FC<{ value: string | null; row: number; col: number }> = ({ value, row, col }) => (
-    <Box sx={colContainer} onClick={() => handleClick(col)}>
-      {value && <img src={`../src/assets/${value}.svg`} alt={value} />}
-    </Box>
-  );
+  const Square: React.FC<SquareProps> = ({ value, col }) => {
+    const [isHovered, setIsHovered] = useState(false);
+  
+    return (
+      <Box 
+        sx={{
+          ...colContainer,
+          ...(isHovered ? { backgroundColor: 'lightblue' } : null),
+        }} 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => {handleClick(col);}}
+      >      
+        {value && (<img src={`../src/assets/${value}.svg`} alt={value} /> )}
+      </Box>
+    )}
 
   return (
     <Box sx={{ ...gridContainer, background: 'url(\'../src/assets/background.jpg\')' }}>
