@@ -1,5 +1,4 @@
 import React from 'react';
-import { styled } from '@mui/system';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,11 +7,6 @@ import TextField from '@mui/material/TextField';
 import { atom, useAtom } from 'jotai';
 import appBarStyles from './AppBar.style.ts';
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  alignItems: 'center',
-  padding: theme.spacing(2),
-  minHeight: '80px',
-}));
 export const rowAtom = atom(6);
 export const colsAtom = atom(7);
 const AppBarConnectFour: React.FC = () => {
@@ -32,10 +26,10 @@ const AppBarConnectFour: React.FC = () => {
   };
 
   return (
-    <>
-      <Box sx={appBarStyles.appBarContainer}>
-        <AppBar position="static">
-          <StyledToolbar>
+    <Box sx={{flexGrow: 1}}>
+      <Box>
+        <AppBar position="fixed">
+        <Toolbar sx={{ alignItems: 'center', padding: 2, minHeight: '80px' }}>
             <Typography variant="h5" noWrap component="div" sx={{ flexGrow: 1 }}>
               Connect 4
             </Typography>
@@ -44,20 +38,18 @@ const AppBarConnectFour: React.FC = () => {
               value={row}
               onChange={handleRowChange}
               variant="outlined"
-              margin="dense"
             />
             <TextField
               label="Cols"
               value={cols}
               onChange={handleColsChange}
               variant="outlined"
-              margin="dense"
             />
-          </StyledToolbar>
+          </Toolbar>
         </AppBar>
       </Box>
       <Box sx={appBarStyles.appBarContainer} />
-    </>
+    </Box>
   );
 };
 

@@ -1,17 +1,28 @@
-import '../styles/App.css';
 import React from 'react';
 import { useAtom } from 'jotai';
-import AppBar, { rowAtom, colsAtom } from './AppBar/AppBar.tsx';
-import Grid from './Grid/Grid.tsx';
+import AppBarComponent, { rowAtom, colsAtom } from './AppBar/AppBar.tsx';
+import GridComponent from './Grid/Grid.tsx';
+import Chat from './Chat/chat.tsx';
+import { Grid, Box } from '@mui/material';
+import '../styles/App.css';
 
-const App:React.FC = () => {
+const App: React.FC = () => {
   const [row] = useAtom(rowAtom);
   const [cols] = useAtom(colsAtom);
+
   return (
-    <>
-      <AppBar />
-      <Grid rows={row} cols={cols} />
-    </>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBarComponent />
+      <Grid container spacing={2}>
+        <Grid item xs={8}>
+          <GridComponent rows={row} cols={cols} />
+        </Grid>
+        <Grid item xs={4}>
+          <Chat />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
+
 export default App;

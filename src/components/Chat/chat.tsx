@@ -61,10 +61,10 @@ export default function App() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 600, margin: 'auto', mt: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography component="h3" gutterBottom>
         Chat Room - Hello {username}
       </Typography>
-      <Paper style={{ maxHeight: 500, overflow: 'auto' }}>
+      <Paper style={{ height: 300, overflow: 'auto' }}>
         <List>
           {messages.map(({ user, date, text }, index) => (
             <ListItem key={index}>
@@ -93,18 +93,6 @@ export default function App() {
           <SendIcon />
         </Button>
       </Box>
-      <Typography variant="h6" gutterBottom component="div" sx={{ mt: 2 }}>
-        Users
-      </Typography>
-      <Paper>
-        <List>
-          {users.map(({ name, id }) => (
-            <ListItem key={id}>
-              <ListItemText primary={name} />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
     </Box>
   );
 }
