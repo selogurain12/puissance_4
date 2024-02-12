@@ -1,6 +1,6 @@
 import { Box, Stack } from '@mui/material';
-import React, { useState } from 'react';
-import { styles } from './Grid.style';
+import React, { useEffect, useState } from 'react';
+import styles from './Grid.style.ts';
 
 interface Props {
   rows: number;
@@ -13,6 +13,7 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   const [grid, setGrid] = useState<string[][]>(initialGrid);
   const { gridContainer, rowContainer, colContainer } = styles;
 
+  useEffect(() => (setGrid(initialGrid)), [rows, cols]);
   const handleClick = (row: number, col: number) => {
     if (!grid[row][col]) {
       const newGrid = [...grid];
