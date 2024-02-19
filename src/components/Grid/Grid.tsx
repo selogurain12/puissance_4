@@ -2,21 +2,19 @@ import {
   Box, Stack, Modal, Typography, Button, Slide,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useAtom } from 'jotai/index';
 import useWebSocket from '../useWebSocket';
 import styles from './Grid.style';
-
-interface Props {
-  rows: number;
-  cols: number;
-}
+import { colsAtom, rowAtom } from '../AppBar/AppBar.tsx';
 
 interface SquareProps {
   value: string | null;
   col: number;
-  row: number;
 }
 
-const Grid: React.FC<Props> = ({ rows, cols }) => {
+const Grid: React.FC = () => {
+  const [rows] = useAtom(rowAtom);
+  const [cols] = useAtom(colsAtom);
   const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
   const initialGrid = Array.from({ length: rows }, () => Array(cols).fill(null));
   const [grid, setGrid] = useState<string[][]>(initialGrid);

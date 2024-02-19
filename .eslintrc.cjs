@@ -16,6 +16,7 @@ module.exports = {
       { allowConstantExport: true },
     ],
     'linebreak-style': 'off',
+    'no-plusplus': 'off',
     'import/extensions': 'off',
     'react/jsx-filename-extension': [2, { extensions: ['.jsx', '.tsx'] }],
     'react/react-in-jsx-scope': 'off',
