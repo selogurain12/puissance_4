@@ -1,11 +1,10 @@
-// hooks/useWebSocket.ts
 import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
-const SOCKET_URL = "http://localhost:3001";
+const SOCKET_URL = 'http://localhost:3001';
 
 const useWebSocket = () => {
-  const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     const socketIo = io(SOCKET_URL);
@@ -16,7 +15,6 @@ const useWebSocket = () => {
       socketIo.disconnect();
     }
     return cleanup;
-
   }, []);
 
   return socket;

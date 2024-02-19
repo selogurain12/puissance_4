@@ -1,18 +1,18 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require("socket.io");
+const { Server } = require('socket.io');
 const moment = require('moment');
 
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
-    }
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
 });
 
-let users = {};
+const users = {};
 let connectedUsers = 0;
 
 io.on('connection', (socket) => {
@@ -29,10 +29,10 @@ io.on('connection', (socket) => {
     io.emit('message', msg);
   });
 
-  socket.on('send', message => {
+  socket.on('send', (message) => {
     const user = users[socket.id];
     if (user) {
-      io.emit('message', { user: user, text: message, date: moment().toISOString() });
+      io.emit('message', { user, text: message, date: moment().toISOString() });
     }
   });
 
@@ -41,16 +41,16 @@ io.on('connection', (socket) => {
     io.emit('move', move);
   });
 
-  socket.on("winner", (data) => {
-    console.log("winner is:", data)
-    io.emit("winner", data);
+  socket.on('winner', (data) => {
+    console.log('winner is:', data);
+    io.emit('winner', data);
   });
 
   socket.on('updateGridSize', (gridSize) => {
-    console.log(gridSize)
+    console.log(gridSize);
     socket.broadcast.emit('gridSizeUpdated', gridSize);
   });
-}); 
+});
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

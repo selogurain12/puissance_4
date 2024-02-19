@@ -17,6 +17,8 @@ module.exports = {
     ],
     'linebreak-style': 'off',
     'no-plusplus': 'off',
+    'no-console': 'off',
+    'react/no-unstable-nested-components': 'off',
     'react/no-array-index-key': 'off',
     'import/extensions': 'off',
     'react/jsx-filename-extension': [2, { extensions: ['.jsx', '.tsx'] }],
