@@ -105,9 +105,9 @@ const Grid: React.FC = () => {
     }
   };
   const handleReset = (): void => {
-    setShowPopup(false); // Hide the victory popup
-    setGrid(initialGrid); // Reset the grid
-    setCurrentPlayer('red'); // Set the starting player
+    setShowPopup(false);
+    setGrid(initialGrid);
+    setCurrentPlayer('red');
   };
 
   return (
