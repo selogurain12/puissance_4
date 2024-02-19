@@ -7,8 +7,6 @@ import useWebSocket from '../useWebSocket';
 const username = prompt("What is your username?");
 
 interface Message {
-  user: string;
-  date: string;
   text: string;
 }
 
@@ -34,7 +32,8 @@ export default function Chat() {
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message.trim()) {
-      socket?.emit("message", (message));
+      const messageData: Message = { text: message };
+      socket?.emit("message", (messageData));
       setMessage("");
     }
   };  
