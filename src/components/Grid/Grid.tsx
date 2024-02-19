@@ -16,25 +16,52 @@ interface SquareProps {
 const Grid: React.FC = () => {
   const [rows] = useAtom(rowAtom);
   const [cols] = useAtom(colsAtom);
+  const socket = useWebSocket();
   const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
   const initialGrid = Array.from({ length: rows }, () => Array(cols).fill(null));
   const [grid, setGrid] = useState<string[][]>(initialGrid);
   const [showPopup, setShowPopup] = useState(false);
   const { gridContainer, colContainer } = styles;
 
-  const socket = useWebSocket();
-
   useEffect(() => {
     if (socket) {
-      socket.on('connect', () => {
-        console.log('Connecté au serveur WebSocket');
-      });
+      const handleGameWon = (data: { winner: string; }) => {
+        console.log("match gagné")
+        if (data.winner === 'red' || data.winner === 'yellow') {
+          setCurrentPlayer(data.winner);
+      } else {
+          console.error('Invalid player color received:', data.winner);
+      }
+      setShowPopup(true);
+      };
 
-      socket.on('message', (message: any) => {
-        console.log('Message reçu:', message);
-      });
+      const handleConnect = () => {
+        console.log('Connected to WebSocket server');
+      };
+      
+      const handleMove = (move: { row: number; col: number; player: any; }) => {
+        applyMove(move);
+      };
+      socket.on('connect', handleConnect);
+      socket.on('move', handleMove);
+      socket.on('winner', handleGameWon);
+  
+      return () => {
+        socket.off('connect', handleConnect);
+        socket.off('move', handleMove);
+        socket.off('winner', handleGameWon);
+      };
     }
-  }, [socket]);
+  }, [socket]); 
+  
+  const applyMove = (move: { row: number; col: number; player: any; }) => {
+    const { row, col, player } = move;
+    if(grid[row][col] === null) {
+      const newGrid = [...grid];
+      newGrid[row][col] = player;
+      setGrid(newGrid);
+    }
+  };
 
   useEffect(() => (setGrid(initialGrid)), [rows, cols]);
   const findValidRow = (col: number): number => {
@@ -103,8 +130,11 @@ const Grid: React.FC = () => {
       setGrid(newGrid);
 
       if (checkForWinner(row, col)) {
+        socket.emit("winner", { winner: currentPlayer })
+        socket.emit("move", { row, col, player: currentPlayer })
         setShowPopup(true);
       } else {
+        socket.emit("move", { row, col, player: currentPlayer })
         setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
       }
     }
