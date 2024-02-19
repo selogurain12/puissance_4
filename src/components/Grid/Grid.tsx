@@ -6,7 +6,11 @@ import { useAtom } from 'jotai/index';
 import useWebSocket from '../useWebSocket';
 import styles from './Grid.style';
 import { colsAtom, rowAtom } from '../AppBar/AppBar.tsx';
-import Square from './Square';
+
+interface SquareProps {
+  value: string | null;
+  col: number;
+}
 
 const Grid: React.FC = () => {
   const [rows] = useAtom(rowAtom);
@@ -98,7 +102,7 @@ const Grid: React.FC = () => {
       setGrid(newGrid);
 
       if (checkForWinner(row, col)) {
-        setShowPopup(true); // Show victory popup
+        setShowPopup(true);
       } else {
         setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
       }
@@ -108,6 +112,24 @@ const Grid: React.FC = () => {
     setShowPopup(false);
     setGrid(initialGrid);
     setCurrentPlayer('red');
+  };
+
+  const Square: React.FC<SquareProps> = ({ value, col }) => {
+    const [isHovered, setIsHovered] = useState(false);
+  
+    return (
+      <Box
+        sx={{
+          ...colContainer,
+          ...(isHovered ? { backgroundColor: 'lightblue' } : null),
+        }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={() => { handleClick(col); }}
+          >
+          {value && (<img src={`../src/assets/${value}.svg`} alt={value} />)}
+          </Box>
+    );
   };
 
   return (
