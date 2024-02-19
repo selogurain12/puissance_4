@@ -26,7 +26,6 @@ const Grid: React.FC = () => {
   useEffect(() => {
     if (socket) {
       const handleGameWon = (data: { winner: string; }) => {
-        console.log('match gagné');
         if (data.winner === 'red' || data.winner === 'yellow') {
           setCurrentPlayer(data.winner);
         } else {
@@ -35,19 +34,13 @@ const Grid: React.FC = () => {
         setShowPopup(true);
       };
 
-      const handleConnect = () => {
-        console.log('Connected to WebSocket server');
-      };
-
       const handleMove = (move: { row: number; col: number; player: string; }) => {
         applyMove(move);
       };
-      socket.on('connect', handleConnect);
       socket.on('move', handleMove);
       socket.on('winner', handleGameWon);
 
       return () => {
-        socket.off('connect', handleConnect);
         socket.off('move', handleMove);
         socket.off('winner', handleGameWon);
       };
@@ -130,11 +123,11 @@ const Grid: React.FC = () => {
       setGrid(newGrid);
 
       if (checkForWinner(row, col)) {
-        socket.emit('winner', { winner: currentPlayer });
-        socket.emit('move', { row, col, player: currentPlayer });
+        socket?.emit('winner', { winner: currentPlayer });
+        socket?.emit('move', { row, col, player: currentPlayer });
         setShowPopup(true);
       } else {
-        socket.emit('move', { row, col, player: currentPlayer });
+        socket?.emit('move', { row, col, player: currentPlayer });
         setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
       }
     }

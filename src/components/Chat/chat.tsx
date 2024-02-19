@@ -1,84 +1,57 @@
 import { useEffect, useState, FormEvent } from 'react';
-import io from 'socket.io-client';
 import moment from 'moment';
-import {
-  Box, TextField, Button, List, ListItem, ListItemText, Typography, Paper,
-} from '@mui/material';
+import { Box, TextField, Button, List, ListItem, ListItemText, Typography, Paper } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import useWebSocket from '../useWebSocket';
 
-const socket = io('http://localhost:3001', {
-  transports: ['websocket', 'polling'],
-});
-
-const username = prompt('What is your username?');
+const username = prompt("What is your username?");
 
 interface Message {
-  user: { name: string; id: string };
+  user: string;
   date: string;
   text: string;
 }
 
-const App = () => {
-  const [users, setUsers] = useState<{ name: string; id: string }[]>([]);
-  const [message, setMessage] = useState('');
+export default function Chat() {
+  const socket = useWebSocket();
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      socket.emit('username', username);
-    });
+    if (socket){
+      const handleMessage = (newMessage: Message) => {
+        setMessages((messages) => [...messages, newMessage]);
+      };
 
-    socket.on('users', (users) => {
-      setUsers(users);
-    });
-
-    socket.on('message', (message) => {
-      setMessages((messages) => [...messages, message]);
-    });
-
-    socket.on('connected', (user) => {
-      setUsers((users) => [...users, user]);
-    });
-
-    socket.on('disconnected', (id) => {
-      setUsers((users) => users.filter((user) => user.id !== id));
-    });
+    socket.on("message", handleMessage);
 
     return () => {
-      socket.off('connect');
-      socket.off('users');
-      socket.off('message');
-      socket.off('connected');
-      socket.off('disconnected');
+      socket.off("message", handleMessage);
     };
-  }, []);
+  }
+  }, [socket]);
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message.trim()) {
-      socket.emit('send', message);
-      setMessage('');
+      socket?.emit("message", (message));
+      setMessage("");
     }
-  };
+  };  
 
   return (
-    <Box sx={{
-      display: 'flex', flexDirection: 'column', maxWidth: 600, margin: 'auto', mt: 4,
-    }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 600, margin: 'auto', mt: 4 }}>
       <Typography component="h3" gutterBottom>
-        Chat Room - Hello
-        {' '}
-        {username}
+        Chat Room - Hello {username}
       </Typography>
       <Paper style={{ height: 300, overflow: 'auto' }}>
-        <List>
-          {messages.map(({ user, date, text }, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={`${user.name}: ${text}`} secondary={moment(date).format('h:mm:ss a')} />
-            </ListItem>
-          ))}
-        </List>
+      <List>
+        {messages.map(({ text }, index) => (
+          <ListItem key={index}>
+            <ListItemText primary={`${username}: ${text}`} secondary={moment().format("h:mm:ss a")} />
+          </ListItem>
+        ))}
+      </List>
       </Paper>
       <Box
         component="form"
@@ -102,6 +75,4 @@ const App = () => {
       </Box>
     </Box>
   );
-};
-
-export default App;
+}

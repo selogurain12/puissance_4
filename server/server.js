@@ -1,56 +1,33 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
-const moment = require('moment');
 
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+    }
 });
 
-const users = {};
-let connectedUsers = 0;
-
 io.on('connection', (socket) => {
-  connectedUsers++;
-  console.log('Un utilisateur est connecté');
 
-  socket.on('username', (username) => {
-    users[socket.id] = { id: socket.id, name: username };
-    io.emit('users', Object.values(users));
-  });
-
-  socket.on('message', (msg) => {
-    console.log('Message reçu:', msg);
-    io.emit('message', msg);
-  });
-
-  socket.on('send', (message) => {
-    const user = users[socket.id];
-    if (user) {
-      io.emit('message', { user, text: message, date: moment().toISOString() });
-    }
+  socket.on('message', (message) => {
+    io.emit('message', message);
   });
 
   socket.on('move', (move) => {
-    console.log('Grille reçu:', move);
     io.emit('move', move);
   });
 
-  socket.on('winner', (data) => {
-    console.log('winner is:', data);
-    io.emit('winner', data);
+  socket.on("winner", (data) => {
+    io.emit("winner", data);
   });
 
   socket.on('updateGridSize', (gridSize) => {
-    console.log(gridSize);
     socket.broadcast.emit('gridSizeUpdated', gridSize);
   });
-});
+}); 
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
