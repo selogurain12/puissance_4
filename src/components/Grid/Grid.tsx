@@ -48,11 +48,11 @@ const Grid: React.FC = () => {
     const player = grid[row][col];
 
     for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
-      for (let col = 0; col <= cols - 4; col++) {
-        if (grid[rowIndex][col] === player
-            && grid[rowIndex][col + 1] === player
-            && grid[rowIndex][col + 2] === player
-            && grid[rowIndex][col + 3] === player) {
+      for (let colIndex = 0; colIndex <= cols - 4; colIndex++) {
+        if (grid[rowIndex][colIndex] === player
+            && grid[rowIndex][colIndex + 1] === player
+            && grid[rowIndex][colIndex + 2] === player
+            && grid[rowIndex][colIndex + 3] === player) {
           return true;
         }
       }
