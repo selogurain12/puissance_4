@@ -1,4 +1,6 @@
-import {Box, Stack, Modal, Typography, Button, Slide} from '@mui/material';
+import {
+  Box, Stack, Modal, Typography, Button, Slide,
+} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from '../useWebSocket';
 import styles from './Grid.style';
@@ -116,20 +118,21 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
 
   const Square: React.FC<SquareProps> = ({ value, col }) => {
     const [isHovered, setIsHovered] = useState(false);
-  
+
     return (
-      <Box 
+      <Box
         sx={{
           ...colContainer,
           ...(isHovered ? { backgroundColor: 'lightblue' } : null),
-        }} 
+        }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => {handleClick(col);}}
-      >      
-        {value && (<img src={`../src/assets/${value}.svg`} alt={value} /> )}
+        onClick={() => { handleClick(col); }}
+      >
+        {value && (<img src={`../src/assets/${value}.svg`} alt={value} />)}
       </Box>
-    )}
+    );
+  };
 
   return (
     <Box sx={{ ...gridContainer, background: 'url(\'../src/assets/background.jpg\')' }}>
