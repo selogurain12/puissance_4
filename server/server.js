@@ -40,7 +40,17 @@ io.on('connection', (socket) => {
     console.log('Grille reçu:', move);
     io.emit('move', move);
   });
-});
+
+  socket.on("winner", (data) => {
+    console.log("winner is:", data)
+    io.emit("winner", data);
+  });
+
+  socket.on('updateGridSize', (gridSize) => {
+    console.log(gridSize)
+    socket.broadcast.emit('gridSizeUpdated', gridSize);
+  });
+}); 
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

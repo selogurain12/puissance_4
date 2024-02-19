@@ -1,7 +1,7 @@
 import {Box, Stack, Modal, Typography, Button, Slide} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import styles from './Grid.style';
-import { io } from 'socket.io-client';
+import useWebSocket from '../useWebSocket';
 
 interface Props {
   rows: number;
@@ -14,10 +14,8 @@ interface SquareProps {
   row: number;
 }
 
-const socket = io("http://localhost:3001", {
-  transports: ["websocket", "polling"]
-});
 const Grid: React.FC<Props> = ({ rows, cols }) => {
+  const socket = useWebSocket()
   const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
   const initialGrid = Array.from({ length: rows }, () => Array(cols).fill(null));
   const [grid, setGrid] = useState<string[][]>(initialGrid);
@@ -25,20 +23,42 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
   const { gridContainer, colContainer } = styles;
 
   useEffect(() => {
-    socket.on('connect', () => {
-      console.log('Connecté au serveur WebSocket');
-    });
-    socket.on('move', (move) => {
-      applyMove(move);
-    });
-  }, [socket, grid]);
+    if (socket) {
+      const handleGameWon = (data: { winner: string; }) => {
+        console.log("match gagné")
+        if (data.winner === 'red' || data.winner === 'yellow') {
+          setCurrentPlayer(data.winner);
+      } else {
+          console.error('Invalid player color received:', data.winner);
+      }
+      setShowPopup(true);
+      };
+
+      const handleConnect = () => {
+        console.log('Connected to WebSocket server');
+      };
+      
+      const handleMove = (move: { row: number; col: number; player: any; }) => {
+        applyMove(move);
+      };
+      socket.on('connect', handleConnect);
+      socket.on('move', handleMove);
+      socket.on('winner', handleGameWon);
   
-  const applyMove = (move: { row: any; col: any; player: any; }) => {
+      return () => {
+        socket.off('connect', handleConnect);
+        socket.off('move', handleMove);
+        socket.off('winner', handleGameWon);
+      };
+    }
+  }, [socket]); 
+  
+  const applyMove = (move: { row: number; col: number; player: any; }) => {
     const { row, col, player } = move;
-    if(grid[row][col] === null) { // Vérifiez si la cellule est vide
+    if(grid[row][col] === null) {
       const newGrid = [...grid];
       newGrid[row][col] = player;
-      setGrid(newGrid); // Mettez à jour la grille avec le nouveau mouvement
+      setGrid(newGrid);
     }
   };
 
@@ -109,8 +129,9 @@ const Grid: React.FC<Props> = ({ rows, cols }) => {
       setGrid(newGrid);
 
       if (checkForWinner(row, col)) {
+        socket.emit("winner", { winner: currentPlayer })
         socket.emit("move", { row, col, player: currentPlayer })
-        setShowPopup(true); // Show victory popup
+        setShowPopup(true);
       } else {
         socket.emit("move", { row, col, player: currentPlayer })
         setCurrentPlayer(currentPlayer === 'red' ? 'yellow' : 'red');
